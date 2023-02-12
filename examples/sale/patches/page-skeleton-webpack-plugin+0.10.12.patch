@@ -1,0 +1,24 @@
+diff --git a/node_modules/page-skeleton-webpack-plugin/src/skeletonPlugin.js b/node_modules/page-skeleton-webpack-plugin/src/skeletonPlugin.js
+index 2a56417..8d1dd59 100644
+--- a/node_modules/page-skeleton-webpack-plugin/src/skeletonPlugin.js
++++ b/node_modules/page-skeleton-webpack-plugin/src/skeletonPlugin.js
+@@ -22,8 +22,17 @@ function SkeletonPlugin(options = {}) {
+ }
+ 
+ SkeletonPlugin.prototype.createServer = function () { // eslint-disable-line func-names
+-  const server = this.server = new Server(this.options) // eslint-disable-line no-multi-assign
+-  server.listen().catch(err => server.log.warn(err))
++  // const server = this.server = new Server(this.options) // eslint-disable-line no-multi-assign
++  // server.listen().catch(err => server.log.warn(err))
++  if (!this.server) {
++    const server = this.server = new Server(this.options) // eslint-disable-line no-multi-assign
++    server.listen().catch(err => server.log.warn(err))
++}
++
++// 作者：昭光
++// 链接：https://juejin.cn/post/6844904177936629774
++// 来源：稀土掘金
++// 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+ }
+ 
+ SkeletonPlugin.prototype.insertScriptToClient = function (htmlPluginData) { // eslint-disable-line func-names

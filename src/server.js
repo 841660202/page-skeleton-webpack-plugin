@@ -11,8 +11,12 @@ const express = require('express')
 const open = require('opn')
 const MemoryFileSystem = require('memory-fs')
 const {
-  writeShell, sockWrite, generateQR, addDprAndFontSize,
-  getLocalIpAddress, createLog
+  writeShell,
+  sockWrite,
+  generateQR,
+  addDprAndFontSize,
+  getLocalIpAddress,
+  createLog,
 } = require('./util')
 const Skeleton = require('./skeleton')
 
@@ -21,7 +25,9 @@ const myFs = new MemoryFileSystem()
 class Server extends EventEmitter {
   constructor(options) {
     super()
-    Object.keys(options).forEach(k => Object.assign(this, { [k]: options[k] }))
+    Object.keys(options).forEach((k) =>
+      Object.assign(this, { [k]: options[k] })
+    )
     this.options = options
     this.host = getLocalIpAddress()
     // 用于缓存写入 shell.html 文件的 html
@@ -41,30 +47,42 @@ class Server extends EventEmitter {
     const { app, staticPath, log } = this
     app.use('/', express.static(path.resolve(__dirname, '../preview/dist')))
 
-    const staticFiles = await promisify(fs.readdir)(path.resolve(__dirname, '../client'))
+    const staticFiles = await promisify(fs.readdir)(
+      path.resolve(__dirname, '../client')
+    )
 
     staticFiles
-      .filter(file => /\.bundle/.test(file))
+      .filter((file) => /\.bundle/.test(file))
       .forEach((file) => {
         app.get(`/${staticPath}/${file}`, (req, res) => {
           res.setHeader('Content-Type', 'application/javascript')
-          fs.createReadStream(path.join(__dirname, '..', 'client', file)).pipe(res)
+          fs.createReadStream(path.join(__dirname, '..', 'client', file)).pipe(
+            res
+          )
         })
       })
 
     app.get('/preview.html', async (req, res) => {
-      fs.createReadStream(path.resolve(__dirname, '..', 'preview/dist/index.html')).pipe(res)
+      fs.createReadStream(
+        path.resolve(__dirname, '..', 'preview/dist/index.html')
+      ).pipe(res)
     })
 
     app.get('/:filename', async (req, res) => {
       const { filename } = req.params
       if (!/\.html$/.test(filename)) return false
-      let html = await promisify(fs.readFile)(path.resolve(__dirname, 'templates/notFound.html'), 'utf-8')
+      let html = await promisify(fs.readFile)(
+        path.resolve(__dirname, 'templates/notFound.html'),
+        'utf-8'
+      )
       try {
         // if I use `promisify(myFs.readFile)` if will occur an error
         // `TypeError: this[(fn + "Sync")] is not a function`,
         // So `readFile` need to hard bind `myFs`, maybe it's an issue of `memory-fs`
-        html = await promisify(myFs.readFile.bind(myFs))(path.resolve(__dirname, `${staticPath}/${filename}`), 'utf-8')
+        html = await promisify(myFs.readFile.bind(myFs))(
+          path.resolve(__dirname, `${staticPath}/${filename}`),
+          'utf-8'
+        )
       } catch (err) {
         log.warn(`When you request the preview html, ${err} ${filename}`)
       }
@@ -80,7 +98,7 @@ class Server extends EventEmitter {
         if (severity === 'error') {
           log.warn(line)
         }
-      }
+      },
     })
     this.sockjsServer = sockjsServer
     sockjsServer.installHandlers(listenServer, { prefix: '/socket' })
@@ -106,8 +124,8 @@ class Server extends EventEmitter {
   // 启动服务
   async listen() {
     /* eslint-disable no-multi-assign */
-    const app = this.app = express()
-    const listenServer = this.listenServer = http.createServer(app)
+    const app = (this.app = express())
+    const listenServer = (this.listenServer = http.createServer(app))
     /* eslint-enable no-multi-assign */
     this.initRouters()
     this.initSocket()
@@ -152,7 +170,7 @@ class Server extends EventEmitter {
                 url: origin + route,
                 skeletonPageUrl,
                 qrCode: await generateQR(skeletonPageUrl),
-                html
+                html,
               }
             }
             /* eslint-ensable no-await-in-loop */
@@ -161,7 +179,11 @@ class Server extends EventEmitter {
             sockWrite(this.sockets, 'console', afterGenMsg)
 
             if (this.previewSocket) {
-              sockWrite([this.previewSocket], 'url', JSON.stringify(this.routesData))
+              sockWrite(
+                [this.previewSocket],
+                'url',
+                JSON.stringify(this.routesData)
+              )
             } else {
               const openMsg = 'Browser open another page...'
               sockWrite([conn], 'console', openMsg)
@@ -216,12 +238,19 @@ class Server extends EventEmitter {
           if (html) {
             this.routesData[route].html = html
             const fileName = await this.writeMagicHtml(html)
-            this.routesData[route].skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
-            sockWrite([this.previewSocket], 'update', JSON.stringify(this.routesData))
+            this.routesData[
+              route
+            ].skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
+            sockWrite(
+              [this.previewSocket],
+              'update',
+              JSON.stringify(this.routesData)
+            )
           }
           break
         }
-        default: break
+        default:
+          break
       }
     }
   }
@@ -237,7 +266,11 @@ class Server extends EventEmitter {
       let fileName = await hasha(decHtml, { algorithm: 'md5' })
       fileName += '.html'
       myFs.mkdirpSync(pathName)
-      await promisify(myFs.writeFile.bind(myFs))(path.join(pathName, fileName), decHtml, 'utf8')
+      await promisify(myFs.writeFile.bind(myFs))(
+        path.join(pathName, fileName),
+        decHtml,
+        'utf8'
+      )
       return fileName
     } catch (err) {
       this.log.warn(err)

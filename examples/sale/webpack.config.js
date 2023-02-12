@@ -5,11 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const px2rem = require('postcss-px2rem')
 const cssnext = require('postcss-cssnext')({
-  browsers: [
-    'last 2 versions',
-    'iOS >= 7',
-    'Android >= 4.0',
-  ],
+  browsers: ['last 2 versions', 'iOS >= 7', 'Android >= 4.0'],
 })
 const SkeletonPlugin = require('page-skeleton-webpack-plugin').SkeletonPlugin
 
@@ -19,7 +15,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/',
-    filename: 'build.js'
+    filename: 'build.js',
   },
   module: {
     rules: [
@@ -29,7 +25,7 @@ module.exports = {
           'style-loader',
           {
             loader: 'css-loader',
-            options: { importLoaders: 1 }
+            options: { importLoaders: 1 },
           },
           {
             loader: 'postcss-loader',
@@ -40,41 +36,38 @@ module.exports = {
                 require('postcss-import')({ root: loader.resourcePath }),
                 require('postcss-nested'),
                 cssnext,
-                px2rem({ remUnit: 75 })
-              ]
-            }
-          }
-        ]
+                px2rem({ remUnit: 75 }),
+              ],
+            },
+          },
+        ],
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        loader: 'vue-loader',
       },
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: file => (
-          /node_modules/.test(file) &&
-          !/\.vue\.js/.test(file)
-        )
+        exclude: (file) => /node_modules/.test(file) && !/\.vue\.js/.test(file),
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
         loader: 'file-loader',
         options: {
-          name: '[name].[ext]?[hash]'
-        }
-      }
-    ]
+          name: '[name].[ext]?[hash]',
+        },
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: 'index.html'
+      template: 'index.html',
     }),
     new VueLoaderPlugin(),
     new SkeletonPlugin({
-      pathname: path.resolve(__dirname, `./shell`),
+      pathname: path.resolve(__dirname, './shell'),
       staticDir: path.resolve(__dirname, './dist'),
       routes: ['/'],
       port: '7890',
@@ -82,21 +75,24 @@ module.exports = {
       svg: {
         color: '#EFEFEF',
         shape: 'circle',
-        shapeOpposite: ['.Rating-gray_1kpffd5_0 svg']
+        shapeOpposite: ['.Rating-gray_1kpffd5_0 svg'],
       },
       image: {
         shape: 'rect', // `rect` | `circle`
         color: '#EFEFEF',
-        shapeOpposite: ['.mint-swipe-items-wrap img']
+        shapeOpposite: ['.mint-swipe-items-wrap img'],
       },
       pseudo: {
         color: '#EFEFEF', // or transparent
         shape: 'circle', // circle | rect
-        shapeOpposite: ['.delivery-icon-hollow_3q8_B5r_0', '.index-premium_39rl0v9']
+        shapeOpposite: [
+          '.delivery-icon-hollow_3q8_B5r_0',
+          '.index-premium_39rl0v9',
+        ],
       },
       button: {
         color: '#EFEFEF',
-        excludes: ['.mint-swipe-items-wrap a']
+        excludes: ['.mint-swipe-items-wrap a'],
       },
       defer: 5000,
       excludes: [],
@@ -106,35 +102,38 @@ module.exports = {
       cssUnit: 'rem',
       headless: true,
       // minify: false,
-      cookies: [{
-        name: 'SID',
-        value: 'a495vvmEPEE4DZi083dr8yR3EAPYqW40HaWA',
-        url: 'https://h5.ele.me'
-      }, {
-        name: 'USERID',
-        value: '273745271',
-        url: 'https://h5.ele.me'
-      }],
+      cookies: [
+        {
+          name: 'SID',
+          value: 'a495vvmEPEE4DZi083dr8yR3EAPYqW40HaWA',
+          url: 'https://h5.ele.me',
+        },
+        {
+          name: 'USERID',
+          value: '273745271',
+          url: 'https://h5.ele.me',
+        },
+      ],
       noInfo: false,
-      storagies: {
-        test: '1234'
-      }
+      // storagies: {
+      //   test: '1234'
+      // }
     }),
   ],
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js'
-    }
+      vue$: 'vue/dist/vue.esm.js',
+    },
   },
   devServer: {
     historyApiFallback: true,
     noInfo: true,
-    overlay: true
+    overlay: true,
   },
   performance: {
-    hints: false
+    hints: false,
   },
-  devtool: '#eval-source-map'
+  devtool: '#eval-source-map',
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -143,7 +142,7 @@ if (process.env.NODE_ENV === 'production') {
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
+      minimize: true,
+    }),
   ])
 }
