@@ -6,7 +6,7 @@ import { CLASS_NAME_PREFEX } from '../config'
 
 const styleCache = new Map()
 
-// some common styles
+// 通用样式
 export const shapeStyle = (shape) => {
   const selector = `.${CLASS_NAME_PREFEX + shape}`
   const rule = `{
@@ -16,7 +16,7 @@ export const shapeStyle = (shape) => {
     styleCache.set(selector, rule)
   }
 }
-
+// 增加样式
 export const addStyle = (selector, rule) => {
   if (!styleCache.has(selector)) {
     styleCache.set(selector, rule)

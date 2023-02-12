@@ -32,12 +32,7 @@ module.exports = {
             options: {
               ident: 'postcss',
               sourceMap: true,
-              plugins: (loader) => [
-                require('postcss-import')({ root: loader.resourcePath }),
-                require('postcss-nested'),
-                cssnext,
-                px2rem({ remUnit: 75 }),
-              ],
+              plugins: (loader) => [require('postcss-import')({ root: loader.resourcePath }), require('postcss-nested'), cssnext, px2rem({ remUnit: 75 })],
             },
           },
         ],
@@ -69,7 +64,7 @@ module.exports = {
     new SkeletonPlugin({
       pathname: path.resolve(__dirname, './shell'),
       staticDir: path.resolve(__dirname, './dist'),
-      routes: ['/'],
+      routes: ['/', '/search'],
       port: '7890',
       loading: 'chiaroscuro',
       svg: {
@@ -85,10 +80,7 @@ module.exports = {
       pseudo: {
         color: '#EFEFEF', // or transparent
         shape: 'circle', // circle | rect
-        shapeOpposite: [
-          '.delivery-icon-hollow_3q8_B5r_0',
-          '.index-premium_39rl0v9',
-        ],
+        shapeOpposite: ['.delivery-icon-hollow_3q8_B5r_0', '.index-premium_39rl0v9'],
       },
       button: {
         color: '#EFEFEF',

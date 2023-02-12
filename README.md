@@ -88,8 +88,8 @@ Page Skeleton is a webpack plugin.The purpose of the plugin is to generate the c
 
 <h4 align="center">Loading animations</h4>
 
-| Spin | Shine | Chiaroscuro |
-|:---:|:---:|:---:|
+|         Spin         |         Shine         |         Chiaroscuro         |
+| :------------------: | :-------------------: | :-------------------------: |
 | ![](./docs/spin.gif) | ![](./docs/shine.gif) | ![](./docs/chiaroscuro.gif) |
 
 _speed up play_
@@ -98,14 +98,14 @@ _speed up play_
 
 All examples are in the `examples` folder.
 
-* [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale)
+- [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale)
 
 ### Installation
 
 Use `npm` to install this plugin, and you also need to install [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin).
 
 > npm install --save-dev page-skeleton-webpack-plugin
-> 
+>
 > npm install --save-dev html-webpack-plugin
 
 ### Basic Use
@@ -122,18 +122,18 @@ const webpackConfig = {
   entry: 'index.js',
   output: {
     path: __dirname + '/dist',
-    filename: 'index.bundle.js'
+    filename: 'index.bundle.js',
   },
   plugin: [
     new HtmlWebpackPlugin({
-       // Your HtmlWebpackPlugin config
+      // Your HtmlWebpackPlugin config
     }),
     new SkeletonPlugin({
-        pathname: path.resolve(__dirname, `${customPath}`), // the path to store shell file
-        staticDir: path.resolve(__dirname, './dist'), // the same as the `output.path`
-        routes: ['/', '/search'], // Which routes you want to generate skeleton screen
-    })
-  ]
+      pathname: path.resolve(__dirname, `${customPath}`), // the path to store shell file
+      staticDir: path.resolve(__dirname, './dist'), // the same as the `output.path`
+      routes: ['/', '/search'], // Which routes you want to generate skeleton screen
+    }),
+  ],
 }
 ```
 
@@ -155,15 +155,15 @@ Add comment `<!-- shell -->` in the root element of you application.
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Document</title>
-</head>
-<body>
-  <div id="app">
-    <!-- shell -->
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- shell -->
+    </div>
+  </body>
 </html>
 ```
 
@@ -185,45 +185,45 @@ Re-package the application with webpack. When the page is restarted, you can see
 
 **Server Options**
 
-| Option    | Type            | Required? | Default      | Description                                                  |
-| --------- | --------------- | --------- | ------------ | ------------------------------------------------------------ |
-| pathname  | String          | Yes       | None         | Where the shell.html file shoud be output.                   |
-| staticDir | String          | Yes       | None         | Path to output static route page                             |
-| routes    | Array           | Yes       | None         | Route in `routes ` will generate static route with skeleton screen, please refer to [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale) |
-| Port      | String          | No        | 8989         | The port of Page Skeleton server                             |
-| debug     | Boolean         | No        | `true`       | Whether debug mode is enabled or not, when debug is true, the output of the headless Chromium console will be output on the terminal. |
+| Option    | Type            | Required? | Default      | Description                                                                                                                                                                                                                                                                                           |
+| --------- | --------------- | --------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pathname  | String          | Yes       | None         | Where the shell.html file shoud be output.                                                                                                                                                                                                                                                            |
+| staticDir | String          | Yes       | None         | Path to output static route page                                                                                                                                                                                                                                                                      |
+| routes    | Array           | Yes       | None         | Route in `routes ` will generate static route with skeleton screen, please refer to [**sale**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/tree/master/examples/sale)                                                                                                                     |
+| Port      | String          | No        | 8989         | The port of Page Skeleton server                                                                                                                                                                                                                                                                      |
+| debug     | Boolean         | No        | `true`       | Whether debug mode is enabled or not, when debug is true, the output of the headless Chromium console will be output on the terminal.                                                                                                                                                                 |
 | minify    | false or Object | No        | See defaults | The plug-in will uglify the generated shell.html file by default. You can pass [html-minifier](https://github.com/kangax/html-minifier) configuration parameters to mimify shell.html. When configured to false , the generated shell.html file is not uglified and the shell.html file is formatted. |
-| logLevel  | String          | No        | `info`       | Which type of messages you want to print in terminal, the optional values are `info`, `warn` and default value is `info`. |
-| quiet     | Boolean         | No        | `false`      | Whether to print messages on the terminal, when set to true, no messages are printed. |
-| noInfo    | Boolean         | No        | `false`      | When the value is `true`, plugin will not print `info` message. |
-| logTime   | Boolean         | No        | `true`       | Print formatted time before the message.                     |
+| logLevel  | String          | No        | `info`       | Which type of messages you want to print in terminal, the optional values are `info`, `warn` and default value is `info`.                                                                                                                                                                             |
+| quiet     | Boolean         | No        | `false`      | Whether to print messages on the terminal, when set to true, no messages are printed.                                                                                                                                                                                                                 |
+| noInfo    | Boolean         | No        | `false`      | When the value is `true`, plugin will not print `info` message.                                                                                                                                                                                                                                       |
+| logTime   | Boolean         | No        | `true`       | Print formatted time before the message.                                                                                                                                                                                                                                                              |
 
 **Skeleton Page Options**
 
-| Option    | Type   | Required | Default      | Description                                                  |
-| --------- | ------ | -------- | ------------ | ------------------------------------------------------------ |
-| loading   | String | No       | spin         | Animations of skeleton page,  enumerated values:`spin` `chiaroscuro` `shine` |
-| text      | Object | No       | See defaults | The configuration object can be configured with a color field that determines the color of the text block in the skeleton page. The color value supports hexadecimal, RGB, and so on. |
-| image     | Object | No       | See defaults | This configuration accepts 3 properties, color, shape, and shapeOpposite. Color and shape are used to determine the color and shape of the image block in the skeleton page. The color value supports hexadecimal and RGB. The shape supports two enumeration values, `circle` and `rect`. The shapeOpposite field takes an array. Each element in the array is a DOM selector. It is used to select the DOM element. The shape of the selected DOM will be opposite to the configured shape. For example, if the configuration is rect, the image block in the shapeOpposite will be In the skeleton page is displayed as a circle shape (circular), how to configure can refer to the default configuration at the end of this section. |
-| button    | Object | No       | See defaults | This configuration accepts two fields, `color` and `excludes`. Color is used to determine the color of the button block in the skeleton page. excludes accepts an array. The elements in the array are DOM selectors used to select elements. The elements in the array will not be considered button blocks. |
+| Option    | Type   | Required | Default      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------- | ------ | -------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| loading   | String | No       | spin         | Animations of skeleton page, enumerated values:`spin` `chiaroscuro` `shine`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| text      | Object | No       | See defaults | The configuration object can be configured with a color field that determines the color of the text block in the skeleton page. The color value supports hexadecimal, RGB, and so on.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| image     | Object | No       | See defaults | This configuration accepts 3 properties, color, shape, and shapeOpposite. Color and shape are used to determine the color and shape of the image block in the skeleton page. The color value supports hexadecimal and RGB. The shape supports two enumeration values, `circle` and `rect`. The shapeOpposite field takes an array. Each element in the array is a DOM selector. It is used to select the DOM element. The shape of the selected DOM will be opposite to the configured shape. For example, if the configuration is rect, the image block in the shapeOpposite will be In the skeleton page is displayed as a circle shape (circular), how to configure can refer to the default configuration at the end of this section.                                               |
+| button    | Object | No       | See defaults | This configuration accepts two fields, `color` and `excludes`. Color is used to determine the color of the button block in the skeleton page. excludes accepts an array. The elements in the array are DOM selectors used to select elements. The elements in the array will not be considered button blocks.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | svg       | Object | No       | See defaults | This configuration accepts 3 fields, `color`, `shape`, and `shapeOpposite`. Color and shape are used to determine the color and shape of the svg block in the skeleton page. The color value supports hexadecimal and RGB, and also supports the `transparent` enumeration value. After setting to transparent, the svg block will be a transparent block. Shapes support two enumeration values, `circle` and `rect`. The shapeOpposite field accepts an array. Each element in the array is a DOM selector for selecting the DOM element. The shape of the selected DOM will be the opposite of the configured shape shape. For example, if the configuration is rect then the svg block in the shapeOpposite will be In the skeleton page is displayed as a circle shape (circular). |
-| pseudo    | Object | No       | See defaults | This configuration accepts two fields, `color` and `shape`. Color is used to determine the color of the skeletal page that is treated as a pseudo-element block, and shape is used to set the shape of the pseudo-element block, accepting two enum values: `circle` and `rect`. |
-| excludes  | Array  | No       | `[]`         | If you have an element that does not require skeleton processing, write the element's CSS selector in the array. |
-| remove    | Array  | No       | `[]`         | If you have elements that need to be removed from the DOM are configured with a CSS selector that will be removed in DOM tree. |
-| hide      | Array  | No       | `[]`         | Don't want to remove it, but hide the element by setting its transparency to 0 and config element's CSS selector in the array. |
-| grayBlock | Array  | No       | `[]`         | The elements in the array are CSS selectors. The selected element will be processed by the plug-in into a color block. The color of the color block is the same as the color of the button block. Internal elements will no longer be specially treated and text will be hidden. |
-| cssUnit   | String | No       | `rem`        | The enum values it accepts are `rem`, `vw`, `vh`, `vmin`, `vmax`. |
-| decimal   | Number | No       | 4            | Config the decimal of the css value in the skeleton page (shell.html). The default value is 4. |
+| pseudo    | Object | No       | See defaults | This configuration accepts two fields, `color` and `shape`. Color is used to determine the color of the skeletal page that is treated as a pseudo-element block, and shape is used to set the shape of the pseudo-element block, accepting two enum values: `circle` and `rect`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| excludes  | Array  | No       | `[]`         | If you have an element that does not require skeleton processing, write the element's CSS selector in the array.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| remove    | Array  | No       | `[]`         | If you have elements that need to be removed from the DOM are configured with a CSS selector that will be removed in DOM tree.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| hide      | Array  | No       | `[]`         | Don't want to remove it, but hide the element by setting its transparency to 0 and config element's CSS selector in the array.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| grayBlock | Array  | No       | `[]`         | The elements in the array are CSS selectors. The selected element will be processed by the plug-in into a color block. The color of the color block is the same as the color of the button block. Internal elements will no longer be specially treated and text will be hidden.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| cssUnit   | String | No       | `rem`        | The enum values it accepts are `rem`, `vw`, `vh`, `vmin`, `vmax`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| decimal   | Number | No       | 4            | Config the decimal of the css value in the skeleton page (shell.html). The default value is 4.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 **Puppeteer Options**
 
-| Options | Type   | Required? | Default         | Description                                                  |
-| ------- | ------ | --------- | --------------- | ------------------------------------------------------------ |
-| device  | String | No        | `iPhone 6 Plus` | Used to set which mobile device simulator to generate the skeleton page. Refer to [puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js) for configuration. |
-| defer   | Number | No        | 5000            | Puppeteer starts the headless Chrome browser. The delay after opening the page is mainly to ensure that the page is fully loaded and the unit is `ms`. |
-| cookie  | Array  | No        | `[]`            | Refer to [puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js). |
-| storagies | Object | No      | `{}`            | LocalStorage
-| sessionStoragies | Object | No      | `{}`     | SessionStorage
+| Options          | Type   | Required? | Default         | Description                                                                                                                                                                                  |
+| ---------------- | ------ | --------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| device           | String | No        | `iPhone 6 Plus` | Used to set which mobile device simulator to generate the skeleton page. Refer to [puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js) for configuration. |
+| defer            | Number | No        | 5000            | Puppeteer starts the headless Chrome browser. The delay after opening the page is mainly to ensure that the page is fully loaded and the unit is `ms`.                                       |
+| cookie           | Array  | No        | `[]`            | Refer to [puppeteer](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).                                                                                            |
+| storagies        | Object | No        | `{}`            | LocalStorage                                                                                                                                                                                 |
+| sessionStoragies | Object | No        | `{}`            | SessionStorage                                                                                                                                                                               |
 
 **Default options**
 
@@ -231,25 +231,25 @@ Re-package the application with webpack. When the page is restarted, you can see
 const pluginDefaultConfig = {
   port: '8989',
   text: {
-    color: '#EEEEEE'
+    color: '#EEEEEE',
   },
   image: {
     shape: 'rect', // `rect` | `circle`
     color: '#EFEFEF',
-    shapeOpposite: []
+    shapeOpposite: [],
   },
   button: {
     color: '#EFEFEF',
-    excludes: [] 
+    excludes: [],
   },
   svg: {
     color: '#EFEFEF',
     shape: 'circle', // circle | rect
-    shapeOpposite: []
+    shapeOpposite: [],
   },
   pseudo: {
     color: '#EFEFEF', // or transparent
-    shape: 'circle' // circle | rect
+    shape: 'circle', // circle | rect
   },
   device: 'iPhone 6 Plus',
   debug: false,
@@ -257,7 +257,7 @@ const pluginDefaultConfig = {
     minifyCSS: { level: 2 },
     removeComments: true,
     removeAttributeQuotes: true,
-    removeEmptyAttributes: false
+    removeEmptyAttributes: false,
   },
   defer: 5000,
   excludes: [],
@@ -272,7 +272,7 @@ const pluginDefaultConfig = {
   logLevel: 'info',
   quiet: false,
   noInfo: false,
-  logTime: true
+  logTime: true,
 }
 ```
 
@@ -285,7 +285,7 @@ There are three main development folders in the project:
 - client: Used to communicate between development projects and plugin server.
 - preview: The code of the preview page.
 - src: plugin server code.
-     - script: script to generate the skeleton page.
+  - script: script to generate the skeleton page.
 
 Special thanks to @Yasujizr who designed the banner of Page Skeleton.
 
@@ -295,6 +295,14 @@ Special thanks to @Yasujizr who designed the banner of Page Skeleton.
 
 ### License
 
- [**MIT**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/blob/master/LICENSE).
+[**MIT**](https://github.com/ElemeFE/page-skeleton-webpack-plugin/blob/master/LICENSE).
 
 Copyright (c) 2017-present, @ElemeFE
+
+## 源码解读
+
+<a href="https://github.com/Jocs/jocs.github.io/issues/22" target="_blank" >一种自动化生成骨架屏的方案</a>
+
+<a href="https://juejin.cn/post/6844903806711365640" target="_blank" >基于 page-skeleton-webpack-plugin 分析自动生成骨架屏原理</a>
+
+<a href="https://blog.csdn.net/weixin_33795093/article/details/91428233" target="_blank" >基于 page-skeleton-webpack-plugin 分析自动生成骨架屏原理</a>

@@ -7,7 +7,7 @@ Vue.use(Vuex)
 
 const state = {
   connect: false,
-  routes: null
+  routes: null,
 }
 
 const mutations = {
@@ -25,7 +25,7 @@ const mutations = {
   },
   SET_MSG(state, { type, message }) {
     Bus.$emit('message', { type, message })
-  }
+  },
 }
 
 const actions = {
@@ -38,19 +38,19 @@ const actions = {
   WRITE_SHELL({ commit }) {
     socketWrite('writeShellFile')
   },
-  SAVE_CODE ({ commit }, value) {
+  SAVE_CODE({ commit }, value) {
     socketWrite('saveShellFile', value)
   },
   WRITE_SHELL_SUCCESS({ commit }, message) {
-    commit('SET_MSG', {type: 'success', message })
-  }
+    commit('SET_MSG', { type: 'success', message })
+  },
 }
 
 const store = new Vuex.Store({
   actions,
   mutations,
   state,
-  getters: {}
+  getters: {},
 })
 
 export default store

@@ -3,7 +3,7 @@
  */
 import { addStyle } from './styleCache'
 import { CLASS_NAME_PREFEX } from '../config'
-
+// button块的处理相对比较简单，去除边框和阴影，设定好统一的背景色和文字，按钮块就处理完成了
 function buttonHandler(ele, { color, excludes }) {
   if (excludes.indexOf(ele) > -1) return false
   const classname = CLASS_NAME_PREFEX + 'button'

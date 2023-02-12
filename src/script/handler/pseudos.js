@@ -1,7 +1,8 @@
 import { getOppositeShape, addClassName } from '../util'
 import { CLASS_NAME_PREFEX } from '../config'
 import { addStyle } from './styleCache'
-
+// 伪元素::before和::after去除背景图、统一为透明背景色
+// 设置形状（矩形or圆角）
 function pseudosHandler({ ele, hasBefore, hasAfter }, { color, shape, shapeOpposite }) {
   const finalShape = shapeOpposite.indexOf(ele) > -1 ? getOppositeShape(shape) : shape
   const PSEUDO_CLASS = `${CLASS_NAME_PREFEX}pseudo`
@@ -20,10 +21,10 @@ function pseudosHandler({ ele, hasBefore, hasAfter }, { color, shape, shapeOppos
     }`,
     [`.${PSEUDO_CIRCLE_CLASS}::before, .${PSEUDO_CIRCLE_CLASS}::after`]: `{
       border-radius: 50% !important;
-    }`
+    }`,
   }
 
-  Object.keys(rules).forEach(key => {
+  Object.keys(rules).forEach((key) => {
     addStyle(key, rules[key])
   })
 

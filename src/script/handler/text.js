@@ -2,27 +2,21 @@ import { getComputedStyle, px2relativeUtil, getTextWidth, setOpacity, addClassNa
 import { addStyle } from './styleCache'
 import { CLASS_NAME_PREFEX } from '../config'
 
-function addTextMask(paragraph, {
-  textAlign,
-  lineHeight,
-  paddingBottom,
-  paddingLeft,
-  paddingRight
-}, maskWidthPercent = 0.5) {
+function addTextMask(paragraph, { textAlign, lineHeight, paddingBottom, paddingLeft, paddingRight }, maskWidthPercent = 0.5) {
   let left
   let right
   switch (textAlign) {
     case 'center':
       left = document.createElement('span')
       right = document.createElement('span')
-      ;[left, right].forEach(mask => {
+      ;[left, right].forEach((mask) => {
         Object.assign(mask.style, {
           display: 'inline-block',
-          width: `${maskWidthPercent / 2 * 100}%`,
+          width: `${(maskWidthPercent / 2) * 100}%`,
           height: lineHeight,
           background: '#fff',
           position: 'absolute',
-          bottom: paddingBottom
+          bottom: paddingBottom,
         })
       })
       left.style.left = paddingLeft
@@ -39,7 +33,7 @@ function addTextMask(paragraph, {
         background: '#fff',
         position: 'absolute',
         bottom: paddingBottom,
-        left: paddingLeft
+        left: paddingLeft,
       })
       paragraph.appendChild(left)
       break
@@ -53,13 +47,17 @@ function addTextMask(paragraph, {
         background: '#fff',
         position: 'absolute',
         bottom: paddingBottom,
-        right: paddingRight
+        right: paddingRight,
       })
       paragraph.appendChild(right)
       break
   }
 }
-
+// 文本块相对处理起来会比较复杂些，所以放到最后来讲。
+// 文本块定义：任何包含文本节点的元素都是文本块。
+// 计算文本块的文本行数、文字高度（即要绘制的文本块高度=fontSize）：
+// 计算文本行数 （ 元素高度 - 上下padding ） / 行高
+// 计算文本高度比 = 字体高度/行高（默认1 / 1.4）
 function textHandler(ele, { color }, cssUnit, decimal) {
   const { width } = ele.getBoundingClientRect()
   // if the text block's width is less than 50, just set it to transparent.
@@ -68,36 +66,26 @@ function textHandler(ele, { color }, cssUnit, decimal) {
   }
   const comStyle = getComputedStyle(ele)
   const text = ele.textContent
-  let {
-    lineHeight,
-    paddingTop,
-    paddingRight,
-    paddingBottom,
-    paddingLeft,
-    position: pos,
-    fontSize,
-    textAlign,
-    wordSpacing,
-    wordBreak
-  } = comStyle
+  let { lineHeight, paddingTop, paddingRight, paddingBottom, paddingLeft, position: pos, fontSize, textAlign, wordSpacing, wordBreak } = comStyle
 
   if (!/\d/.test(lineHeight)) {
     const fontSizeNum = parseFloat(fontSize, 10) || 14
     lineHeight = `${fontSizeNum * 1.4}px`
   }
 
-  const position = ['fixed', 'absolute', 'flex'].find(p => p === pos) ? pos : 'relative'
+  const position = ['fixed', 'absolute', 'flex'].find((p) => p === pos) ? pos : 'relative'
 
   const height = ele.offsetHeight
   // Math.floor
-  const lineCount = (height - parseFloat(paddingTop, 10) - parseFloat(paddingBottom, 10)) / parseFloat(lineHeight, 10) | 0 // eslint-disable-line no-bitwise
+  const lineCount = ((height - parseFloat(paddingTop, 10) - parseFloat(paddingBottom, 10)) / parseFloat(lineHeight, 10)) | 0 // eslint-disable-line no-bitwise
 
   let textHeightRatio = parseFloat(fontSize, 10) / parseFloat(lineHeight, 10)
   if (Number.isNaN(textHeightRatio)) {
     textHeightRatio = 1 / 1.4 // default number
   }
   /* eslint-disable no-mixed-operators */
-  const firstColorPoint = ((1 - textHeightRatio) / 2 * 100).toFixed(decimal)
+  // 通过线性渐变生成条纹背景的文本块：
+  const firstColorPoint = (((1 - textHeightRatio) / 2) * 100).toFixed(decimal)
   const secondColorPoint = (((1 - textHeightRatio) / 2 + textHeightRatio) * 100).toFixed(decimal)
   const backgroundSize = `100% ${px2relativeUtil(lineHeight, cssUnit, decimal)}`
   const className = CLASS_NAME_PREFEX + 'text-' + firstColorPoint.toString(32).replace(/\./g, '-')
@@ -130,8 +118,9 @@ function textHandler(ele, { color }, cssUnit, decimal) {
       fontSize,
       lineHeight,
       wordBreak,
-      wordSpacing
+      wordSpacing,
     })
+    // 单行文本需要计算文本宽度和text-aligin属性
     const textWidthPercent = textWidth / (width - parseInt(paddingRight, 10) - parseInt(paddingLeft, 10))
     ele.style.backgroundSize = `${(textWidthPercent > 1 ? 1 : textWidthPercent) * 100}% ${px2relativeUtil(lineHeight, cssUnit, decimal)}`
     switch (textAlign) {

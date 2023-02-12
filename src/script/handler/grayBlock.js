@@ -1,6 +1,6 @@
 import { addStyle } from './styleCache'
 import { CLASS_NAME_PREFEX, Node } from '../config'
-
+// 生成灰色的块状
 function grayHandler(ele, { color }) {
   const classname = CLASS_NAME_PREFEX + 'gray'
   const rule = `{
@@ -11,9 +11,9 @@ function grayHandler(ele, { color }) {
   ele.classList.add(classname)
 
   const elements = ele.querySelectorAll('*')
-  Array.from(elements).forEach(element => {
+  Array.from(elements).forEach((element) => {
     const childNodes = element.childNodes
-    if (Array.from(childNodes).some(n => n.nodeType === Node.TEXT_NODE)) {
+    if (Array.from(childNodes).some((n) => n.nodeType === Node.TEXT_NODE)) {
       element.classList.add(classname)
     }
   })

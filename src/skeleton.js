@@ -1,20 +1,15 @@
-"use strict"
+'use strict'
 
-const puppeteer = require("puppeteer")
-const devices = require("puppeteer/DeviceDescriptors")
-const { parse, toPlainObject, fromPlainObject, generate } = require("css-tree")
-const {
-  sleep,
-  genScriptContent,
-  htmlMinify,
-  collectImportantComments,
-} = require("./util")
+const puppeteer = require('puppeteer')
+const devices = require('puppeteer/DeviceDescriptors')
+const { parse, toPlainObject, fromPlainObject, generate } = require('css-tree')
+const { sleep, genScriptContent, htmlMinify, collectImportantComments } = require('./util')
 
 class Skeleton {
   constructor(options = {}, log) {
     this.options = options
     this.browser = null
-    this.scriptContent = ""
+    this.scriptContent = ''
     this.pages = new Set()
     this.log = log
     this.initialize()
@@ -40,7 +35,7 @@ class Skeleton {
     this.pages.add(page)
     await page.emulate(devices[device])
     if (debug) {
-      page.on("console", (...args) => {
+      page.on('console', (...args) => {
         this.log.info(...args)
       })
     }
@@ -53,10 +48,14 @@ class Skeleton {
   }
 
   // Generate the skeleton screen for the specific `page`
+  // 执行genSkeleton方法生成骨架屏
   async makeSkeleton(page) {
     const { defer } = this.options
+    // 把生成骨架屏代码注入puppeteer同时执行初始化
     await page.addScriptTag({ content: this.scriptContent })
+    // 延迟逻辑，用于等待某些异步操作，图1我已经使用waitForSelector，所以这个可以不用管
     await sleep(defer)
+    // 执行genSkeleton方法
     await page.evaluate((options) => {
       Skeleton.genSkeleton(options)
     }, this.options)
@@ -70,7 +69,7 @@ class Skeleton {
     const { cookies, storagies = {}, sessionStoragies = {} } = this.options
 
     await page.setRequestInterception(true)
-    page.on("request", (request) => {
+    page.on('request', (request) => {
       if (stylesheetAstObjects[request.url]) {
         // don't need to download the same assets
         request.abort()
@@ -79,14 +78,14 @@ class Skeleton {
       }
     })
     // To build a map of all downloaded CSS (css use link tag)
-    page.on("response", (response) => {
+    page.on('response', (response) => {
       const requestUrl = response.url()
-      const ct = response.headers()["content-type"] || ""
+      const ct = response.headers()['content-type'] || ''
       if (response.ok && !response.ok()) {
         throw new Error(`${response.status} on ${requestUrl}`)
       }
 
-      if (ct.indexOf("text/css") > -1 || /\.css$/i.test(requestUrl)) {
+      if (ct.indexOf('text/css') > -1 || /\.css$/i.test(requestUrl)) {
         response.text().then((text) => {
           const ast = parse(text, {
             parseValue: false,
@@ -97,17 +96,15 @@ class Skeleton {
         })
       }
     })
-    page.on("pageerror", (error) => {
+    page.on('pageerror', (error) => {
       throw error
     })
 
     if (cookies.length) {
-      await page.setCookie(
-        ...cookies.filter((cookie) => typeof cookie === "object")
-      )
+      await page.setCookie(...cookies.filter((cookie) => typeof cookie === 'object'))
     }
-
-    const response = await page.goto(url, { waitUntil: "networkidle2" })
+    // / 打开url
+    const response = await page.goto(url, { waitUntil: 'networkidle2' })
 
     if (Object.keys(storagies).length) {
       await page.evaluate((storagies) => {
@@ -134,12 +131,10 @@ class Skeleton {
     if (response && !response.ok()) {
       throw new Error(`${response.status} on ${url}`)
     }
-
+    // 开始build骨架屏
     await this.makeSkeleton(page)
 
-    const { styles, cleanedHtml } = await page.evaluate(() =>
-      Skeleton.getHtmlAndStyle()
-    )
+    const { styles, cleanedHtml } = await page.evaluate(() => Skeleton.getHtmlAndStyle())
 
     const stylesheetAstArray = styles.map((style) => {
       const ast = parse(style, {
@@ -152,7 +147,7 @@ class Skeleton {
     const cleanedCSS = await page.evaluate(
       async (stylesheetAstObjects, stylesheetAstArray) => {
         // eslint-disable-line no-shadow
-        const DEAD_OBVIOUS = new Set(["*", "body", "html"])
+        const DEAD_OBVIOUS = new Set(['*', 'body', 'html'])
         const cleanedStyles = []
 
         const checker = (selector) => {
@@ -170,10 +165,7 @@ class Skeleton {
             return keep
           } catch (err) {
             const exception = err.toString()
-            console.log(
-              `Unable to querySelector('${selector}') [${exception}]`,
-              "error"
-            ) // eslint-disable-line no-console
+            console.log(`Unable to querySelector('${selector}') [${exception}]`, 'error') // eslint-disable-line no-console
             return false
           }
         }
@@ -183,10 +175,8 @@ class Skeleton {
 
           const clean = (children, cb) =>
             children.filter((child) => {
-              if (child.type === "Rule") {
-                const values = child.prelude.value
-                  .split(",")
-                  .map((x) => x.trim())
+              if (child.type === 'Rule') {
+                const values = child.prelude.value.split(',').map((x) => x.trim())
                 const keepValues = values.filter((selectorString) => {
                   if (decisionsCache[selectorString]) {
                     return decisionsCache[selectorString]
@@ -197,11 +187,11 @@ class Skeleton {
                 })
                 if (keepValues.length) {
                   // re-write the selector value
-                  child.prelude.value = keepValues.join(", ")
+                  child.prelude.value = keepValues.join(', ')
                   return true
                 }
                 return false
-              } else if (child.type === "Atrule" && child.name === "media") {
+              } else if (child.type === 'Atrule' && child.name === 'media') {
                 // recurse
                 child.block.children = clean(child.block.children, cb)
                 return child.block.children.length > 0
@@ -214,17 +204,10 @@ class Skeleton {
           return ast
         }
 
-        const links = Array.from(document.querySelectorAll("link"))
+        const links = Array.from(document.querySelectorAll('link'))
 
         links
-          .filter(
-            (link) =>
-              link.href &&
-              (link.rel === "stylesheet" ||
-                link.href.toLowerCase().endsWith(".css")) &&
-              !link.href.toLowerCase().startsWith("blob:") &&
-              link.media !== "print"
-          )
+          .filter((link) => link.href && (link.rel === 'stylesheet' || link.href.toLowerCase().endsWith('.css')) && !link.href.toLowerCase().startsWith('blob:') && link.media !== 'print')
           .forEach((stylesheet) => {
             if (!stylesheetAstObjects[stylesheet.href]) {
               throw new Error(`${stylesheet.href} not in stylesheetAstObjects`)
@@ -252,7 +235,7 @@ class Skeleton {
         const cleanedAst = fromPlainObject(ast)
         return generate(cleanedAst)
       })
-      .join("\n")
+      .join('\n')
 
     const finalCss = collectImportantComments(allCleanedCSS)
     // finalCss = minify(finalCss).css ? `html-minifier` use `clean-css` as css minifier
@@ -270,12 +253,10 @@ class Skeleton {
         $$html$$
       </body>
       </html>`
-    shellHtml = shellHtml
-      .replace("$$css$$", finalCss)
-      .replace("$$html$$", cleanedHtml)
+    shellHtml = shellHtml.replace('$$css$$', finalCss).replace('$$html$$', cleanedHtml)
     const result = {
       originalRoute: route,
-      route: await page.evaluate("window.location.pathname"),
+      route: await page.evaluate('window.location.pathname'),
       html: htmlMinify(shellHtml, false),
     }
     await this.closePage(page)

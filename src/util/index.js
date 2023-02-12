@@ -26,15 +26,17 @@ function htmlMinify(html, options) {
 
 async function writeShell(routesData, options) {
   const { pathname, minify: minOptions } = options
-  return Promise.all(Object.keys(routesData).map(async (route) => {
-    const html = routesData[route].html
-    const minifiedHtml = htmlMinify(getCleanedShellHtml(html), minOptions)
-    const trimedRoute = route.replace(/\//g, '')
-    const filePath = path.join(pathname, trimedRoute ? `${trimedRoute}.html` : 'index.html')
-    await fse.ensureDir(pathname)
-    await promisify(fs.writeFile)(filePath, minifiedHtml, 'utf-8')
-    return Promise.resolve()
-  }))
+  return Promise.all(
+    Object.keys(routesData).map(async (route) => {
+      const html = routesData[route].html
+      const minifiedHtml = htmlMinify(getCleanedShellHtml(html), minOptions)
+      const trimedRoute = route.replace(/\//g, '')
+      const filePath = path.join(pathname, trimedRoute ? `${trimedRoute}.html` : 'index.html')
+      await fse.ensureDir(pathname)
+      await promisify(fs.writeFile)(filePath, minifiedHtml, 'utf-8')
+      return Promise.resolve()
+    })
+  )
 }
 
 function sleep(duration) {
@@ -49,6 +51,7 @@ async function genScriptContent() {
   return result
 }
 // add script tag into html string, just as document.body.appendChild(script)
+// 给html增加script元素
 function addScriptTag(source, src, port) {
   const token = source.split('</body>')
   if (token.length < 2) return source
@@ -73,7 +76,7 @@ function createLog(options) {
   return weblog({
     level: logLevel,
     name: 'pswp',
-    timestamp: options.logTime
+    timestamp: options.logTime,
   })
 }
 
@@ -108,35 +111,46 @@ const collectImportantComments = (css) => {
   combined.push(cleaned)
   return combined.join('\n')
 }
-
+// 输出骨架屏
 const outputSkeletonScreen = async (originHtml, options, log) => {
   const { pathname, staticDir, routes } = options
-  return Promise.all(routes.map(async (route) => {
-    const trimedRoute = route.replace(/\//g, '')
-    const filePath = path.join(pathname, trimedRoute ? `${trimedRoute}.html` : 'index.html')
-    const html = await promisify(fs.readFile)(filePath, 'utf-8')
-    const finalHtml = originHtml.replace('<!-- shell -->', html)
-    const outputDir = path.join(staticDir, route)
-    const outputFile = path.join(outputDir, 'index.html')
-    await fse.ensureDir(outputDir)
-    await promisify(fs.writeFile)(outputFile, finalHtml, 'utf-8')
-    log(`write ${outputFile} successfully in ${route}`)
-    return Promise.resolve()
-  }))
+  return Promise.all(
+    // 不同路径进行处理，这是一个多路由处理吗？
+    routes.map(async (route) => {
+      // 修剪后的路径
+      const trimedRoute = route.replace(/\//g, '')
+      const filePath = path.join(pathname, trimedRoute ? `${trimedRoute}.html` : 'index.html')
+      // 读文件内容
+      const html = await promisify(fs.readFile)(filePath, 'utf-8')
+      // 替换文件内容
+      const finalHtml = originHtml.replace('<!-- shell -->', html)
+      // 确认输出文件夹
+      const outputDir = path.join(staticDir, route)
+      const outputFile = path.join(outputDir, 'index.html')
+      await fse.ensureDir(outputDir)
+      // 进行输出
+      await promisify(fs.writeFile)(outputFile, finalHtml, 'utf-8')
+      log(`write ${outputFile} successfully in ${route}`)
+      return Promise.resolve()
+    })
+  )
 }
 
 // Server 端主动推送消息到制定 socket
 const sockWrite = (sockets, type, data) => {
   sockets.forEach((sock) => {
-    sock.write(JSON.stringify({
-      type, data
-    }))
+    sock.write(
+      JSON.stringify({
+        type,
+        data,
+      })
+    )
   })
 }
-
+// 添加dpr和字体大小
 const addDprAndFontSize = (html) => {
   const json = html2json(html)
-  const rootElement = json.child.filter(c => c.tag === 'html')[0]
+  const rootElement = json.child.filter((c) => c.tag === 'html')[0]
   const oriAttr = rootElement.attr
   const style = oriAttr.style || []
   const index = style.indexOf('font-size:')
@@ -148,12 +162,12 @@ const addDprAndFontSize = (html) => {
   }
   const rootAttr = Object.assign(oriAttr, {
     'data-dpr': '3',
-    style
+    style,
   })
   rootElement.attr = rootAttr
   return json2html(json)
 }
-
+// 生成二维码
 const generateQR = async (text) => {
   try {
     return await QRCode.toDataURL(text)
@@ -161,10 +175,11 @@ const generateQR = async (text) => {
     return Promise.reject(err)
   }
 }
-
+// 获取本地ip地址信息
 const getLocalIpAddress = () => {
   const interfaces = os.networkInterfaces()
-  for (const devName in interfaces) { // eslint-disable-line guard-for-in
+  for (const devName in interfaces) {
+    // eslint-disable-line guard-for-in
     const iface = interfaces[devName]
     for (const alias of iface) {
       if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
@@ -173,8 +188,8 @@ const getLocalIpAddress = () => {
     }
   }
 }
-
-const snakeToCamel = name => name.replace(/-([a-z])/g, (_, p1) => p1.toUpperCase())
+// 蛇形转化成驼峰
+const snakeToCamel = (name) => name.replace(/-([a-z])/g, (_, p1) => p1.toUpperCase())
 
 module.exports = {
   createLog,
@@ -189,5 +204,5 @@ module.exports = {
   genScriptContent,
   addDprAndFontSize,
   getLocalIpAddress,
-  collectImportantComments
+  collectImportantComments,
 }

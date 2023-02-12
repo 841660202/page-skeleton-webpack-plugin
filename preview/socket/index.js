@@ -7,16 +7,17 @@ const sock = new SockJS(`http://localhost:${port}/socket`)
 window.sock = sock
 
 export const socketWrite = (type, data) => {
+  console.log('type, data', type, data)
   sock.send(JSON.stringify({ type, data }))
 }
 
-const initSock = store => {
+const initSock = (store) => {
   sock.onopen = () => {
     store.dispatch('GET_CONNECT', true)
     socketWrite('connect', 'preview')
     socketWrite('url', 'preview')
   }
-  sock.onmessage = function(e) {
+  sock.onmessage = function (e) {
     const { type, data } = JSON.parse(e.data)
     switch (type) {
       case 'url':
@@ -33,9 +34,9 @@ const initSock = store => {
         break
       }
     }
-   }
+  }
 
-  sock.onclose = function() {
+  sock.onclose = function () {
     store.dispatch('GET_CONNECT', false)
     sock.close()
   }
